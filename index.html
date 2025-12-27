@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML5 生詞翻轉卡 (隨機+過濾版)</title>
+    <title>HTML5 生词翻转卡 (随机+过滤版)</title>
     <style>
         body {
-            font-family: "微軟正黑體", "Helvetica Neue", Arial, sans-serif;
+            font-family: "微软正黑体", "Helvetica Neue", Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -14,12 +14,12 @@
             height: 100vh;
             background-color: #f0f2f5;
             margin: 0;
-            overflow: hidden; /* 防止動畫時出現卷軸 */
+            overflow: hidden; /* 防止动画时出现卷轴 */
         }
 
         h1 { color: #333; margin-bottom: 10px; }
 
-        /* 卡片容器設定 */
+        /* 卡片容器设定 */
         .scene {
             width: 600px;
             height: 350px;
@@ -29,7 +29,7 @@
             position: relative;
         }
 
-        /* 實際翻轉的物件 */
+        /* 实际翻转的对象 */
         .card {
             width: 100%;
             height: 100%;
@@ -60,7 +60,7 @@
             text-align: center;
         }
 
-        /* 正面樣式 */
+        /* 正面样式 */
         .card__face--front {
             background: white;
             color: #2c3e50;
@@ -72,7 +72,7 @@
             margin: 0;
         }
 
-        /* 背面樣式 */
+        /* 背面样式 */
         .card__face--back {
             background: #3498db;
             color: white;
@@ -95,7 +95,7 @@
             border-radius: 8px;
         }
 
-        /* 按鈕區塊 */
+        /* 按钮区块 */
         .controls {
             display: flex;
             gap: 15px;
@@ -122,9 +122,9 @@
         }
         .btn-nav:hover { background-color: #34495e; }
 
-        /* "我認識" 按鈕特別樣式 */
+        /* "我认识" 按钮特别样式 */
         .btn-known {
-            background-color: #27ae60; /* 綠色 */
+            background-color: #27ae60; /* 绿色 */
             font-weight: bold;
         }
         .btn-known:hover { background-color: #2ecc71; }
@@ -136,9 +136,9 @@
             font-weight: bold;
         }
 
-        /* 完勝畫面 */
+        /* 完胜画面 */
         #game-over {
-            display: none; /* 預設隱藏 */
+            display: none; /* 预设隐藏 */
             position: absolute;
             top: 0;
             left: 0;
@@ -168,13 +168,13 @@
 </head>
 <body>
 
-    <h1>隨機生詞練習</h1>
+    <h1>随机生词练习</h1>
 
     <div class="scene">
         <div class="card">
             <div class="card__face card__face--front">
                 <h2 id="word-display">Loading...</h2>
-                <p style="font-size: 1rem; color: #888; margin-top: 10px;">(點擊翻看解釋)</p>
+                <p style="font-size: 1rem; color: #888; margin-top: 10px;">(点击翻看解释)</p>
             </div>
             <div class="card__face card__face--back">
                 <div class="meaning" id="meaning-display"></div>
@@ -184,26 +184,26 @@
         
         <div id="game-over">
             <h2>🎉 太棒了！</h2>
-            <p style="font-size: 1.5em; color: #555;">你已經複習完所有單字！</p>
-            <button class="btn-restart" onclick="restartGame()">重新開始</button>
+            <p style="font-size: 1.5em; color: #555;">你已经复习完所有单字！</p>
+            <button class="btn-restart" onclick="restartGame()">重新开始</button>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn-nav" id="skip-btn">跳過 (不熟)</button>
-        <button class="btn-known" id="known-btn">✅ 我認識 (移除)</button>
+        <button class="btn-nav" id="skip-btn">跳过 (不熟)</button>
+        <button class="btn-known" id="known-btn">✅ 我认识 (移除)</button>
     </div>
     
-    <div class="counter">剩餘單字: <span id="remaining-count" style="color: #e74c3c;">0</span></div>
+    <div class="counter">剩余单字: <span id="remaining-count" style="color: #e74c3c;">0</span></div>
 
     <script src="words.js"></script>
 
     <script>
         if (typeof wordData === 'undefined') {
-            alert("錯誤：找不到 words.js 檔案。");
+            alert("错误：找不到 words.js 档案。");
         }
 
-        let studyQueue = []; // 用來存放目前還沒背熟的單字清單
+        let studyQueue = []; // 用来存放目前还没背熟的单词列表
         let currentIndex = 0;
         
         const card = document.querySelector('.card');
@@ -215,7 +215,7 @@
 
         let isAnimating = false;
 
-        // 洗牌演算法 (Fisher-Yates Shuffle)
+        // 洗牌算法 (Fisher-Yates Shuffle)
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -225,16 +225,16 @@
         }
 
         function init() {
-            // 1. 複製一份原始資料到 studyQueue (避免修改到原始 wordData)
+            // 1. 复制一份原始数据到 studyQueue (避免修改到原始 wordData)
             studyQueue = [...wordData];
             
-            // 2. 隨機排列
+            // 2. 随机排列
             shuffle(studyQueue);
             
-            // 3. 重置狀態
+            // 3. 重置状态
             currentIndex = 0;
             gameOverScreen.style.display = 'none';
-            card.classList.remove('is-flipped'); // 確保卡片是正面
+            card.classList.remove('is-flipped'); // 确保卡片是正面
             
             updateCounter();
             loadCard();
@@ -245,20 +245,20 @@
         }
 
         function loadCard() {
-            // 檢查是否還有單字
+            // 检查是否还有单字
             if (studyQueue.length === 0) {
                 showGameOver();
                 return;
             }
 
-            // 確保索引不會超出範圍 (循環播放)
+            // 确保索引不会超出范围 (循环播放)
             if (currentIndex >= studyQueue.length) {
                 currentIndex = 0;
             }
 
             const data = studyQueue[currentIndex];
 
-            // 如果卡片是翻開的，先翻回來再換字
+            // 如果卡片是翻开的，先翻回来再换字
             if (card.classList.contains('is-flipped')) {
                 isAnimating = true;
                 card.classList.remove('is-flipped');
@@ -285,33 +285,33 @@
             init(); // 重新初始化
         }
 
-        // --- 事件監聽 ---
+        // --- 事件监听 ---
 
-        // 翻轉卡片
+        // 翻转卡片
         document.querySelector('.scene').addEventListener('click', function(e) {
-            // 避免點到完勝畫面的按鈕時觸發翻牌
+            // 避免点到完胜画面的按钮时触发翻牌
             if (e.target.closest('#game-over')) return;
             card.classList.toggle('is-flipped');
         });
 
-        // 按鈕：跳過 (保留在清單中，只換下一張)
+        // 按钮：跳过 (保留在清单中，只换下一张)
         document.getElementById('skip-btn').addEventListener('click', function() {
             if(isAnimating || studyQueue.length === 0) return;
             currentIndex++; 
             loadCard();
         });
 
-        // 按鈕：我認識 (從清單中刪除，並換下一張)
+        // 按钮：我认识 (从清单中删除，并换下一张)
         document.getElementById('known-btn').addEventListener('click', function() {
             if(isAnimating || studyQueue.length === 0) return;
 
-            // 核心邏輯：從陣列中移除目前的單字
+            // 核心逻辑：从数组中移除目前的单字
             studyQueue.splice(currentIndex, 1);
             
-            // 因為目前的被刪掉了，currentIndex 現在自然指向原本的"下一個"，
-            // 但如果我們刪的是最後一個，currentIndex 會超出範圍，loadCard 會處理這部分。
-            // 為了視覺流暢，我們通常維持 currentIndex 不變 (因為後面的會補上來)，
-            // 除非刪除的是最後一個元素。
+            // 因为目前的被删掉了，currentIndex 现在自然指向原本的"下一个"，
+            // 但如果我们删的是最后一个，currentIndex 会超出范围，loadCard 会处理这部分。
+            // 为了视觉流畅，我们通常维持 currentIndex 不变 (因为后面的会补上来)，
+            // 除非删除的是最后一个元素。
             if (currentIndex >= studyQueue.length) {
                 currentIndex = 0;
             }
@@ -320,7 +320,7 @@
             loadCard();
         });
 
-        // 鍵盤支援
+        // 键盘支持
         document.addEventListener('keydown', (e) => {
             if (studyQueue.length === 0) return;
 
@@ -328,15 +328,15 @@
                 e.preventDefault();
                 card.classList.toggle('is-flipped');
             } else if (e.code === 'ArrowRight') {
-                // 右鍵視為"跳過"
+                // 右键视为"跳过"
                 document.getElementById('skip-btn').click();
             } else if (e.code === 'Enter') {
-                // Enter 鍵視為"我認識"
+                // Enter 键视为"我认识"
                 document.getElementById('known-btn').click();
             }
         });
 
-        // 啟動
+        // 启动
         init();
 
     </script>
